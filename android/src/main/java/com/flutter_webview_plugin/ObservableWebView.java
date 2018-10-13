@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 
-public class ObservableWebView extends WebView {
+import com.github.lzyzsd.jsbridge.BridgeWebView;
+
+public class ObservableWebView extends BridgeWebView { // replace the web view as bridge web view
     private OnScrollChangedCallback mOnScrollChangedCallback;
 
     public ObservableWebView(final Context context)

@@ -1,10 +1,11 @@
-group 'com.yourcompany.flutter_webview_plugin'
+group 'com.fy.flutter_webview_plugin'
 version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 
     dependencies {
@@ -15,6 +16,8 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -22,7 +25,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.1'
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,5 +33,12 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        checkReleaseBuilds false
+        abortOnError false
     }
+}
+
+dependencies {
+    implementation 'com.github.lzyzsd:jsbridge:1.0.4'
+    compileOnly files('/Users/lichong/Dev/flutter/bin/cache/artifacts/engine/android-arm64/flutter.jar')
 }

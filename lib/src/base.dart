@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 const _kChannel = 'flutter_webview_plugin';
 
 // TODO: more general state for iOS/android
-enum WebViewState { shouldStart, startLoad, finishLoad }
+enum WebViewState { shouldStart, startLoad, finishLoad, nativeCall }
 
 // TODO: use an id by webview to be able to manage multiple webview
 
@@ -240,6 +240,9 @@ class WebViewStateChanged {
         break;
       case 'finishLoad':
         t = WebViewState.finishLoad;
+        break;
+      case 'nativeCall': // Added by Li Chong 2018/10/13
+        t = WebViewState.nativeCall;
         break;
     }
     return new WebViewStateChanged(t, map['url'], map['navigationType']);

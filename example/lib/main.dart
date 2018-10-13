@@ -7,7 +7,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 const kAndroidUserAgent =
     'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
 
-String selectedUrl = 'https://flutter.io';
+String selectedUrl = 'https://baidu.com';
 
 void main() {
   runApp(new MyApp());
@@ -123,7 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
         flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
         setState(() {
-          _history.add('onStateChanged: ${state.type} ${state.url}');
+          if (state.type == WebViewState.nativeCall) {
+            _history.add('onStateChanged: ${state.type} ${state.url}');
+          }
         });
       }
     });
@@ -200,8 +202,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              final future =
-                  flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
+//              final future =
+//                  flutterWebviewPlugin.evalJavascript("setTimeout(function() { window.WebViewJavascriptBridge.callHandler("+
+//                  "'nativeCall'"+
+//                  "    , {'param': '中文测试'}"+
+//                  "    , function(responseData) {"+
+//                  "      alert(responseData);"+
+//                  "    }"+
+//                  "); }, 2000);");
+              final future = flutterWebviewPlugin.evalJavascript(
+                  "setTimeout(function() { " +
+                  "  window.WebViewJavascriptBridge.callHandler(" +
+                  "    'nativeCall', { 'param': 'test' }, " +
+                  "    function(respData) { " +
+                  "      console.log(respData); " +
+                  "    }" +
+                  "  );" +
+                  "}, 8000);"
+              );
               future.then((String result) {
                 setState(() {
                   _history.add('eval: $result');

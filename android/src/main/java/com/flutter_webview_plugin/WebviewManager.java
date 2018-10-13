@@ -24,6 +24,11 @@ import io.flutter.plugin.common.MethodChannel;
 
 import static android.app.Activity.RESULT_OK;
 
+import com.github.lzyzsd.jsbridge.BridgeHandler;
+import com.github.lzyzsd.jsbridge.BridgeWebView;
+import com.github.lzyzsd.jsbridge.CallBackFunction;
+import com.github.lzyzsd.jsbridge.DefaultHandler;
+
 /**
  * Created by lejard_h on 20/12/2017.
  */
@@ -70,7 +75,7 @@ class WebviewManager {
     }
 
     boolean closed = false;
-    WebView webView;
+    BridgeWebView webView;
     Activity activity;
     ResultHandler resultHandler;
 
@@ -78,8 +83,11 @@ class WebviewManager {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.resultHandler = new ResultHandler();
-        WebViewClient webViewClient = new BrowserClient();
-        webView.setOnKeyListener(new View.OnKeyListener() {
+        WebViewClient webViewClient = new WithBridgeWebViewClient(this.webView);
+
+        this.webView.setDefaultHandler(new DefaultHandler());
+
+        this.webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -98,7 +106,7 @@ class WebviewManager {
             }
         });
 
-        ((ObservableWebView) webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
+        ((ObservableWebView) this.webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
             public void onScroll(int x, int y, int oldx, int oldy){
                 Map<String, Object> yDirection = new HashMap<>();
                 yDirection.put("yDirection", (double)y);
@@ -109,8 +117,8 @@ class WebviewManager {
             }
         });
 
-        webView.setWebViewClient(webViewClient);
-        webView.setWebChromeClient(new WebChromeClient()
+        this.webView.setWebViewClient(webViewClient);
+        this.webView.setWebChromeClient(new WebChromeClient()
         {
             //The undocumented magic method override
             //Eclipse will swear at you if you try to put @Override here
@@ -167,6 +175,18 @@ class WebviewManager {
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
+            }
+        });
+
+        // Js from web call native method and send back to Flutter due to channel
+        this.webView.registerHandler("nativeCall", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("payload", data);
+            payload.put("type", "nativeCall");
+            // Due to state-changed stream subscription
+            FlutterWebviewPlugin.channel.invokeMethod("onState", payload);
             }
         });
     }
