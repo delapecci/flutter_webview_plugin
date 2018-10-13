@@ -85,8 +85,6 @@ class WebviewManager {
         this.resultHandler = new ResultHandler();
         WebViewClient webViewClient = new WithBridgeWebViewClient(this.webView);
 
-        this.webView.setDefaultHandler(new DefaultHandler());
-
         this.webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -179,6 +177,7 @@ class WebviewManager {
         });
 
         // Js from web call native method and send back to Flutter due to channel
+        this.webView.setDefaultHandler(new DefaultHandler());
         this.webView.registerHandler("nativeCall", new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
