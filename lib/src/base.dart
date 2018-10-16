@@ -226,8 +226,10 @@ class WebViewStateChanged {
   final WebViewState type;
   final String url;
   final int navigationType;
+  final Map infoMap;
+  final String payload;
 
-  WebViewStateChanged(this.type, this.url, this.navigationType);
+  WebViewStateChanged(this.type, this.url, this.navigationType, this.infoMap, this.payload);
 
   factory WebViewStateChanged.fromMap(Map<String, dynamic> map) {
     WebViewState t;
@@ -245,7 +247,7 @@ class WebViewStateChanged {
         t = WebViewState.nativeCall;
         break;
     }
-    return new WebViewStateChanged(t, map['url'], map['navigationType']);
+    return new WebViewStateChanged(t, map['url'], map['navigationType'], map['infoMap'], map['payload']);
   }
 }
 
